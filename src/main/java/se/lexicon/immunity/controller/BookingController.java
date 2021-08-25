@@ -7,7 +7,6 @@ import se.lexicon.immunity.service.BookingService;
 
 @RestController
 public class BookingController {
-
     private final BookingService bookingService;
 
     public BookingController(BookingService bookingService) {
@@ -34,6 +33,11 @@ public class BookingController {
         }
 
         return ResponseEntity.ok(bookingService.unBook(bookingId, patientId));
+    }
+
+    @PutMapping("/api/v1/bookings/{id}")
+    public ResponseEntity<BookingDTO> update(@PathVariable("id") String id, @RequestBody BookingDTO bookingDTO){
+        return ResponseEntity.ok(bookingService.update(id, bookingDTO));
     }
 
 

@@ -11,6 +11,8 @@ import se.lexicon.immunity.model.entity.Booking;
 import se.lexicon.immunity.model.entity.Patient;
 import se.lexicon.immunity.model.entity.Premises;
 
+import java.util.List;
+
 @Service
 public class BookingServiceImpl implements BookingService{
 
@@ -94,4 +96,18 @@ public class BookingServiceImpl implements BookingService{
         return converterService.toFullDTO(updated);
     }
 
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public BookingDTO update(String id, BookingDTO bookingDTO) {
+        Booking booking = bookingDAO.findById(id)
+                .orElseThrow(() -> new AppResourceNotFoundException("Could not find booking with id " + id));
+
+        booking.setPrice(bookingDTO.getPrice());
+        booking.setAdministratorId(bookingDTO.getAdministratorId());
+        booking.setDateTime(bookingDTO.getDateTime());
+        booking.setVaccineType(bookingDTO.getVaccineType());
+
+        Booking updated = bookingDAO.save(booking);
+        return converterService.toFullDTO(updated);
+    }
 }
