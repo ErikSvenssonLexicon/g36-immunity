@@ -59,8 +59,35 @@ public class BookingServiceImpl implements BookingService{
         Patient patient = patientDAO.findById(patientId)
                 .orElseThrow(() -> new AppResourceNotFoundException("Could not find patient with id " + patientId));
 
+        if(!booking.isVacant() && booking.getPatient() != null){
+            if(!booking.getPatient().getId().equals(patientId)){
+                throw new IllegalStateException("Found booking is not vacant");
+            }
+        }
+
         booking.setPatient(patient);
         booking.setVacant(false);
+
+        Booking updated = bookingDAO.save(booking);
+
+        return converterService.toFullDTO(updated);
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public BookingDTO unBook(String bookingId, String patientId) {
+        Booking booking = bookingDAO.findById(bookingId)
+                .orElseThrow(() -> new AppResourceNotFoundException("Could not find booking with id " + bookingId));
+
+        Patient patient = patientDAO.findById(patientId)
+                .orElseThrow(() -> new AppResourceNotFoundException("Could not find patient with id " + patientId));
+
+        if(booking.getPatient() != null && !booking.getPatient().getId().equals(patient.getId())){
+            throw new IllegalStateException("Operation aborted: found patient.id didn't match provided id");
+        }
+
+        booking.setPatient(null);
+        booking.setVacant(true);
 
         Booking updated = bookingDAO.save(booking);
 

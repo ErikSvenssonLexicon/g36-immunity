@@ -24,10 +24,17 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.findById(bookingId));
     }
 
-    @PutMapping("/api/v1/bookings/{id}/book")
+    @PutMapping("/api/v1/bookings/{id}/people")
     public ResponseEntity<BookingDTO> bookVaccine(
             @PathVariable("id") String bookingId,
-            @RequestParam(name = "patientId") String patientId){
-        return ResponseEntity.ok(bookingService.book(bookingId, patientId));
+            @RequestParam(name = "patientId") String patientId,
+            @RequestParam(name = "isBooking", defaultValue = "true") Boolean isBooking){
+        if(isBooking){
+            return ResponseEntity.ok(bookingService.book(bookingId, patientId));
+        }
+
+        return ResponseEntity.ok(bookingService.unBook(bookingId, patientId));
     }
+
+
 }

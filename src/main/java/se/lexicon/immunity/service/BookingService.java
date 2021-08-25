@@ -8,4 +8,5 @@ public interface BookingService {
     BookingDTO create(BookingDTO bookingDTO, String premisesId);
     BookingDTO findById(String id);
     BookingDTO book(String bookingId, String patientId);
+    BookingDTO unBook(String bookingId, String patientId);
 }
