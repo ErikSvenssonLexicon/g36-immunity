@@ -1,10 +1,7 @@
 package se.lexicon.immunity.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import se.lexicon.immunity.model.dto.BookingDTO;
 import se.lexicon.immunity.service.BookingService;
 
@@ -22,4 +19,15 @@ public class BookingController {
         return ResponseEntity.status(201).body(bookingService.create(newBooking, premiseId));
     }
 
+    @GetMapping("/api/v1/bookings/{id}")
+    public ResponseEntity<BookingDTO> findById(@PathVariable("id") String bookingId){
+        return ResponseEntity.ok(bookingService.findById(bookingId));
+    }
+
+    @PutMapping("/api/v1/bookings/{id}/book")
+    public ResponseEntity<BookingDTO> bookVaccine(
+            @PathVariable("id") String bookingId,
+            @RequestParam(name = "patientId") String patientId){
+        return ResponseEntity.ok(bookingService.book(bookingId, patientId));
+    }
 }
