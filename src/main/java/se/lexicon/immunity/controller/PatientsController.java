@@ -1,10 +1,13 @@
 package se.lexicon.immunity.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import se.lexicon.immunity.validators.OnCreate;
 import se.lexicon.immunity.model.dto.PatientDTO;
 import se.lexicon.immunity.service.PatientService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,7 +20,7 @@ public class PatientsController {
     }
 
     @PostMapping("/api/v1/patients")
-    public ResponseEntity<PatientDTO> createPatient(@RequestBody PatientDTO patientDTO){
+    public ResponseEntity<PatientDTO> createPatient(@Validated(OnCreate.class) @Valid @RequestBody PatientDTO patientDTO){
         return ResponseEntity.status(201).body(patientService.create(patientDTO));
     }
 

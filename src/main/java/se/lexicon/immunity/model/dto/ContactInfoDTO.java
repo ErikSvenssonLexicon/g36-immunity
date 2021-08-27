@@ -1,9 +1,23 @@
 package se.lexicon.immunity.model.dto;
 
+import org.springframework.validation.annotation.Validated;
+import se.lexicon.immunity.validators.OnCreate;
+import se.lexicon.immunity.validators.UniqueEmail;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
+import static se.lexicon.immunity.util.Regexes.EMAIL_REGEX;
+import static se.lexicon.immunity.util.ValidationMessages.*;
+
+@Validated
 public class ContactInfoDTO implements Serializable {
+
     private String id;
+    @NotBlank(message = REQUIRED_FIELD)
+    @Email(message = INVALID_EMAIL_FORMAT, regexp = EMAIL_REGEX)
+    @UniqueEmail(groups = OnCreate.class)
     private String email;
     private String phone;
 

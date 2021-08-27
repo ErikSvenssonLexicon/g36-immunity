@@ -1,21 +1,40 @@
 package se.lexicon.immunity.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.springframework.validation.annotation.Validated;
+import se.lexicon.immunity.validators.OnCreate;
 import se.lexicon.immunity.model.demo.Gender;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+import javax.validation.constraints.PastOrPresent;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
-public class PatientDTO implements Serializable {
+import static se.lexicon.immunity.util.ValidationMessages.PAST_OR_PRESENT;
+import static se.lexicon.immunity.util.ValidationMessages.REQUIRED_FIELD;
 
+@Validated
+public class PatientDTO implements Serializable {
+    @Null(groups = OnCreate.class)
     private String id;
+
+    @NotBlank(message = REQUIRED_FIELD)
     private String pnr;
+    @NotBlank(message = REQUIRED_FIELD)
     private String firstName;
+    @NotBlank(message = REQUIRED_FIELD)
     private String lastName;
+    @NotNull(message = REQUIRED_FIELD)
+    @PastOrPresent(message = PAST_OR_PRESENT)
     private LocalDate birthDate;
+    @NotNull(message = REQUIRED_FIELD)
     private Gender gender;
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Valid
     private ContactInfoDTO contactInfo;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<BookingDTO> bookings;
