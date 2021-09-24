@@ -12,4 +12,8 @@ public interface BookingDAO extends JpaRepository<Booking, String> {
     List<Booking> findByPatientId(@Param("id") String id);
     @Query("SELECT b FROM Booking b WHERE b.premises.id = :id")
     List<Booking> findByPremisesId(@Param("id") String id);
+    @Query("SELECT b FROM  Booking b WHERE b.vacant = :status")
+    List<Booking> findByVacantStatus(@Param("status") boolean status);
+    @Query("SELECT b FROM Booking b WHERE UPPER(b.premises.address.city) = UPPER(:city) AND b.vacant = :vacancy")
+    List<Booking> findByCityAndVacancy(@Param("city") String city, @Param("vacancy") boolean vacancy);
 }

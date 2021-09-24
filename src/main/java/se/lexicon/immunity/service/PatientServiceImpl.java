@@ -11,6 +11,7 @@ import se.lexicon.immunity.model.entity.ContactInfo;
 import se.lexicon.immunity.model.entity.Patient;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,31 +30,44 @@ public class PatientServiceImpl implements PatientService{
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public PatientDTO create(PatientDTO patientDTO){
-        Patient patient = new Patient(
-                patientDTO.getPnr(),
-                patientDTO.getFirstName(),
-                patientDTO.getLastName(),
-                patientDTO.getBirthDate(),
-                patientDTO.getGender()
-        );
-
-        if(patientDTO.getContactInfo() != null){
-            ContactInfo contactInfo = new ContactInfo(
-                    patientDTO.getContactInfo().getEmail(),
-                    patientDTO.getContactInfo().getPhone()
+        String pnr = patientDTO.getPnr().replaceAll("-", "").replaceAll(" ", "");
+        Optional<Patient> optional = patientDAO.findByPnr(pnr);
+        if(optional.isPresent()){
+            return converterService.toFullDTO(optional.get(), bookingDAO.findByPatientId(optional.get().getId()));
+        }else{
+            Patient patient = new Patient(
+                    pnr,
+                    patientDTO.getFirstName(),
+                    patientDTO.getLastName(),
+                    patientDTO.getBirthDate(),
+                    patientDTO.getGender()
             );
-            patient.setContactInfo(contactInfo);
+
+            if(patientDTO.getContactInfo() != null){
+                ContactInfo contactInfo = new ContactInfo(
+                        patientDTO.getContactInfo().getEmail(),
+                        patientDTO.getContactInfo().getPhone()
+                );
+                patient.setContactInfo(contactInfo);
+            }
+
+            Patient persisted = patientDAO.save(patient);
+
+            return converterService.toFullDTO(persisted, null);
         }
-
-        Patient persisted = patientDAO.save(patient);
-
-        return converterService.toFullDTO(persisted, null);
     }
 
     @Transactional(readOnly = true)
     public Patient internalFindById(String id){
         return patientDAO.findById(id)
                 .orElseThrow(() -> new AppResourceNotFoundException("Could not find patient with id " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public Patient internalFindByPersonalNumber(String personalNumber){
+        String pnr = personalNumber.replaceAll("-","").trim();
+        return patientDAO.findByPnr(pnr)
+                .orElseThrow(() -> new AppResourceNotFoundException("No patient with personal number " + personalNumber + " was found in the database"));
     }
 
     @Override
@@ -77,7 +91,7 @@ public class PatientServiceImpl implements PatientService{
     public PatientDTO update(String id, PatientDTO patientDTO) {
         Patient patient = internalFindById(id);
 
-        patient.setPnr(patientDTO.getPnr());
+        patient.setPnr(patientDTO.getPnr().replaceAll("-", "").replaceAll(" ", "").trim());
         patient.setFirstName(patientDTO.getFirstName());
         patient.setLastName(patientDTO.getLastName());
         patient.setBirthDate(patientDTO.getBirthDate());
@@ -87,5 +101,12 @@ public class PatientServiceImpl implements PatientService{
 
         patient = patientDAO.save(patient);
         return converterService.toFullDTO(patient, bookingDAO.findByPatientId(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PatientDTO findByPersonalNumber(String pnr) {
+        Patient patient = internalFindByPersonalNumber(pnr);
+        return converterService.toFullDTO(patient, bookingDAO.findByPatientId(patient.getId()));
     }
 }

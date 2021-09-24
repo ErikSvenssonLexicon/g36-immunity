@@ -15,4 +15,6 @@ public interface PatientService {
     PatientDTO findById(String id);
 
     PatientDTO update(String id, PatientDTO patientDTO);
+
+    PatientDTO findByPersonalNumber(String pnr);
 }

@@ -11,13 +11,13 @@ import java.io.Serializable;
 import static se.lexicon.immunity.util.Regexes.EMAIL_REGEX;
 import static se.lexicon.immunity.util.ValidationMessages.*;
 
-@Validated
+
 public class ContactInfoDTO implements Serializable {
 
     private String id;
     @NotBlank(message = REQUIRED_FIELD)
     @Email(message = INVALID_EMAIL_FORMAT, regexp = EMAIL_REGEX)
-    @UniqueEmail(groups = OnCreate.class)
+    @UniqueEmail()
     private String email;
     private String phone;
 

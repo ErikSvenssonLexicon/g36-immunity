@@ -17,11 +17,10 @@ import java.util.List;
 import static se.lexicon.immunity.util.ValidationMessages.PAST_OR_PRESENT;
 import static se.lexicon.immunity.util.ValidationMessages.REQUIRED_FIELD;
 
-@Validated
-public class PatientDTO implements Serializable {
-    @Null(groups = OnCreate.class)
-    private String id;
 
+public class PatientDTO implements Serializable {
+    @Null
+    private String id;
     @NotBlank(message = REQUIRED_FIELD)
     private String pnr;
     @NotBlank(message = REQUIRED_FIELD)
@@ -34,7 +33,8 @@ public class PatientDTO implements Serializable {
     @NotNull(message = REQUIRED_FIELD)
     private Gender gender;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Valid
+
+    @Valid @NotNull
     private ContactInfoDTO contactInfo;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<BookingDTO> bookings;
@@ -104,5 +104,19 @@ public class PatientDTO implements Serializable {
 
     public void setBookings(List<BookingDTO> bookings) {
         this.bookings = bookings;
+    }
+
+    @Override
+    public String toString() {
+        return "PatientDTO{" +
+                "id='" + id + '\'' +
+                ", pnr='" + pnr + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", birthDate=" + birthDate +
+                ", gender=" + gender +
+                ", contactInfo=" + contactInfo +
+                ", bookings=" + bookings +
+                '}';
     }
 }

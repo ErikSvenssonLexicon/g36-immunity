@@ -11,6 +11,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@CrossOrigin("*")
 public class PatientsController {
 
     private final PatientService patientService;
@@ -20,12 +21,17 @@ public class PatientsController {
     }
 
     @PostMapping("/api/v1/patients")
-    public ResponseEntity<PatientDTO> createPatient(@Validated(OnCreate.class) @Valid @RequestBody PatientDTO patientDTO){
+    public ResponseEntity<PatientDTO> createPatient(@Valid @RequestBody PatientDTO patientDTO){
+        System.out.println(patientDTO);
+
         return ResponseEntity.status(201).body(patientService.create(patientDTO));
     }
 
     @GetMapping("/api/v1/patients")
-    public ResponseEntity<List<PatientDTO>> search(){
+    public ResponseEntity<?> search(@RequestParam(name = "pnr", required = false) String pnr){
+        if(pnr != null){
+            return ResponseEntity.ok(patientService.findByPersonalNumber(pnr));
+        }
         return ResponseEntity.ok(patientService.findAll());
     }
 

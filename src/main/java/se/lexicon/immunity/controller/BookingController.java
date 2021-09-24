@@ -13,6 +13,18 @@ public class BookingController {
         this.bookingService = bookingService;
     }
 
+    @GetMapping("/api/v1/bookings")
+    public ResponseEntity<?> search(@RequestParam(name = "search", defaultValue = "all") String search, @RequestParam(name = "value", defaultValue = "") String value){
+        switch (search){
+            case "all":
+                return ResponseEntity.ok(bookingService.findAllByVacantStatus(true));
+            case "city":
+                return ResponseEntity.ok(bookingService.findAllByCityAnVacantStatus(value, true));
+            default:
+                throw new IllegalArgumentException("Invalid param " + search + " was expecting 'all' or 'city'");
+        }
+    }
+
     @PostMapping("/api/v1/bookings")
     public ResponseEntity<BookingDTO> create(@RequestBody BookingDTO newBooking, @RequestParam(name = "id") String premiseId){
         return ResponseEntity.status(201).body(bookingService.create(newBooking, premiseId));

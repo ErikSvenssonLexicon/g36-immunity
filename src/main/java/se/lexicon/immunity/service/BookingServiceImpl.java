@@ -12,6 +12,7 @@ import se.lexicon.immunity.model.entity.Patient;
 import se.lexicon.immunity.model.entity.Premises;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingServiceImpl implements BookingService{
@@ -51,6 +52,22 @@ public class BookingServiceImpl implements BookingService{
         return bookingDAO.findById(id)
                 .map(converterService::toFullDTO)
                 .orElseThrow(() -> new AppResourceNotFoundException("Could not find booking with id " + id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingDTO> findAllByVacantStatus(boolean vacantStatus) {
+        return bookingDAO.findByVacantStatus(vacantStatus).stream()
+                .map(converterService::toSmallDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingDTO> findAllByCityAnVacantStatus(String city, boolean vacantStatus) {
+        return bookingDAO.findByCityAndVacancy(city, vacantStatus).stream()
+                .map(converterService::toSmallDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
